@@ -12,7 +12,7 @@ class PreprocessorTest extends FreeSpec with Matchers {
     val expression = "2*(1-1)+3*(1-3+4)+10/2"
 
     //when
-    val tokenized = Preprocessor.tokenize(expression.toList)
+    val tokenized = Preprocessor.tokenize(expression)
 
     //then
     tokenized.mkString shouldEqual expression
@@ -20,8 +20,8 @@ class PreprocessorTest extends FreeSpec with Matchers {
 
   "should pass validation if paretheses are balanced" in {
     //when
-    val a = Preprocessor.tokenize("2*(1-1)+3*(1-3+4)+10/2".toList)
-    val b = Preprocessor.tokenize("2*(1-1)+3*(1-(3+4)+10/2)".toList)
+    val a = Preprocessor.tokenize("2*(1-1)+3*(1-3+4)+10/2")
+    val b = Preprocessor.tokenize("2*(1-1)+3*(1-(3+4)+10/2)")
 
     //then
     Preprocessor.validateParenthesess(a) shouldEqual Success(a)
@@ -30,8 +30,8 @@ class PreprocessorTest extends FreeSpec with Matchers {
 
   "should not pass validation if paretheses are not balanced" in {
     //when
-    val a = Preprocessor.tokenize("2*(1-1)+3*(1-3+4)+10/2)".toList)
-    val b = Preprocessor.tokenize("2*(1-1)+(3*(1-(3+4)+10/2)".toList)
+    val a = Preprocessor.tokenize("2*(1-1)+3*(1-3+4)+10/2)")
+    val b = Preprocessor.tokenize("2*(1-1)+(3*(1-(3+4)+10/2)")
 
     //then
     Preprocessor.validateParenthesess(a) shouldEqual Failure(ValidationError("Parentheses are not balanced"))

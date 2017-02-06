@@ -3,12 +3,16 @@ package preprocess
 import scala.util.{Failure, Success, Try}
 
 object Preprocessor {
-  def tokenize(list: List[Char], number: String = ""): List[String] = list match {
-    case Nil if number.nonEmpty => number :: Nil
-    case Nil => Nil
-    case x :: xs if x.isDigit => tokenize(xs, number.trim + x)
-    case x :: xs if number.nonEmpty => number :: x.toString :: tokenize(xs)
-    case x :: xs => x.toString :: tokenize(xs)
+  def tokenize(expression: String): List[String] = {
+    def f(list: List[Char], number: String = ""): List[String] = list match {
+      case Nil if number.nonEmpty => number :: Nil
+      case Nil => Nil
+      case x :: xs if x.isDigit => f(xs, number.trim + x)
+      case x :: xs if number.nonEmpty => number :: x.toString :: f(xs)
+      case x :: xs => x.toString :: f(xs)
+    }
+
+    f(expression.toList)
   }
 
   def validateParenthesess(expression: List[String]): Try[List[String]] = {
