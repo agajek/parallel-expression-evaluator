@@ -5,6 +5,7 @@ import akka.http.scaladsl.server.{HttpApp, Route}
 import api.EvaluatorREST.{EvaluationRequest, EvaluationResponse}
 import de.heikoseeberger.akkahttpjson4s.Json4sSupport
 import org.json4s.{DefaultFormats, jackson}
+import preprocess.Preprocessor.ValidationError
 
 import scala.util.{Failure, Success}
 
@@ -20,7 +21,7 @@ class EvaluatorREST(service: EvaluationService) extends HttpApp with Json4sSuppo
 
         onComplete(requestResult) {
           case Success(value) => complete(EvaluationResponse(value))
-          case Failure(ex) => complete(401 -> ex)
+          case Failure(v @ ValidationError(msg)) => complete(401 -> v)
         }
       }
     }
