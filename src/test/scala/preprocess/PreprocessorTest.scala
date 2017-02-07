@@ -1,10 +1,9 @@
 package preprocess
 
+import cats.data.NonEmptyList
+import cats.data.Validated.{Invalid, Valid}
 import org.scalatest.{FreeSpec, Matchers}
-import preprocess.Preprocessor.ValidationError
-
-import scala.util.{Failure, Success}
-
+import Preprocessor._
 class PreprocessorTest extends FreeSpec with Matchers {
 
   "should tokenize expression" in {
@@ -24,8 +23,8 @@ class PreprocessorTest extends FreeSpec with Matchers {
     val b = "2*(1-1)+3*(1-(3+4)+10/2)"
 
     //then
-    Preprocessor.validateParenthesess(a) shouldEqual Success(a)
-    Preprocessor.validateParenthesess(b) shouldEqual Success(b)
+    validateParenthesess(a) shouldEqual Valid(a)
+    validateParenthesess(b) shouldEqual Valid(b)
   }
 
   "should not pass validation if paretheses are not balanced" in {
@@ -34,29 +33,25 @@ class PreprocessorTest extends FreeSpec with Matchers {
     val b = "2*(1-1)+(3*(1-(3+4)+10/2)"
 
     //then
-    Preprocessor.validateParenthesess(a) shouldEqual Failure(ValidationError("Parentheses are not balanced"))
-    Preprocessor.validateParenthesess(b) shouldEqual Failure(ValidationError("Parentheses are not balanced"))
+    validateParenthesess(a) shouldEqual Invalid(NonEmptyList.of(parenthesesValidationError))
+    validateParenthesess(b) shouldEqual Invalid(NonEmptyList.of(parenthesesValidationError))
   }
 
   "should pass validation when expression has proper format" in {
     val a = "2*(1-1)+3*(1-3+4)+10/2)"
 
-    Preprocessor.validateExpressionFormat(a) shouldEqual Success(a)
+    Preprocessor.validateExpressionFormat(a) shouldEqual Valid(a)
   }
 
   "should not pass validation when expression has no proper format" in {
     val a = "2+*3*10"
 
-    intercept[ValidationError] {
-      Preprocessor.validateExpressionFormat(a).get
-    }
+    Preprocessor.validateExpressionFormat(a) shouldEqual Invalid(NonEmptyList.of(expressionFormatValidationError))
   }
 
   "should not pass validation when expression contains not allowed characters" in {
     val a = "2+2^3"
 
-    intercept[ValidationError] {
-      Preprocessor.validateExpressionFormat(a).get
-    }
+    Preprocessor.validateExpressionFormat(a) shouldEqual Invalid(NonEmptyList.of(expressionFormatValidationError))
   }
 }
