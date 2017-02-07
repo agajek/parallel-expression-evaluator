@@ -5,9 +5,9 @@ object Expression {
   type Stacks = (List[Operator], List[String])
 
   def convertToPostfix(expression: List[String]): List[String] = {
-    val (operators, stack) = processExpression(expression)
-    val stackTree = operators.foldLeft(stack)( (stack, token) => pushEvaluated(stack, token) )
-    stackTree.head.split("\\s").toList
+    val wrappedWithParentheses = "(" :: expression ::: List(")")
+    val (operators, stack) = processExpression(wrappedWithParentheses)
+    stack.head.split("\\s").toList
   }
 
   private def processExpression(expression: List[String]): Stacks =

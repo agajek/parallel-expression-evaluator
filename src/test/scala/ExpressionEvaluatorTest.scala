@@ -10,7 +10,7 @@ class ExpressionEvaluatorTest extends TestKit(ActorSystem("EvaluatorTest")) with
 
 
   "should evaluate input expression" in {
-    val expression = Preprocessor.tokenize("2*(1-1)+3*(1-3+4)+10/2")
+    val expression = Preprocessor.tokenize("(2*(1-1)+3*(1-3+4)+10/2)")
     val postfix = Expression.convertToPostfix(expression)
     val tree = ExpressionTree.buildTree(postfix)
 
