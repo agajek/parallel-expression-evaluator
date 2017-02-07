@@ -1,11 +1,11 @@
 package actors
 
 import actors.NodeActor.{Get, Value}
-import akka.actor.{Actor, ActorRef, Props, Stash}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props, Stash}
 import sequential.{ExpressionTree, Leaf, Node}
+import NodeActor.unexpectedMessageLog
 
-
-class NodeActor(tree: ExpressionTree) extends Actor with Stash {
+class NodeActor(tree: ExpressionTree) extends Actor with Stash with ActorLogging {
 
   tree match {
     case Node(operator, left, right) =>
@@ -19,30 +19,32 @@ class NodeActor(tree: ExpressionTree) extends Actor with Stash {
   }
 
   override def receive: Receive = {
-    case _ =>
+    case msg => log.warning(unexpectedMessageLog(msg.toString, "receive"))
   }
 
   def twoChildren(op: String, left: ActorRef, right: ActorRef): Receive = {
     case Value(leftVal) if sender() == left =>
-      context.become(leftChildAcquired(op, leftVal, right))
+      context.become(leftChildAcquired(op, leftVal))
 
     case Value(rightVal) if sender() == right =>
-      context.become(rightChildAcquired(op, rightVal, right))
+      context.become(rightChildAcquired(op, rightVal))
 
     case Get => stash()
-
+    case msg => log.warning(unexpectedMessageLog(msg.toString, "twoChildren"))
   }
 
-  def leftChildAcquired(op: String, leftVal: Double, right: ActorRef): Receive = {
+  def leftChildAcquired(op: String, leftVal: Double): Receive = {
     case Value(rightVal) => evaluate(op, leftVal, rightVal)
 
     case Get => stash()
+    case msg => log.warning(unexpectedMessageLog(msg.toString, "leftChildAcquired"))
   }
 
-  def rightChildAcquired(op: String, rightVal: Double, left: ActorRef): Receive = {
+  def rightChildAcquired(op: String, rightVal: Double): Receive = {
     case Value(leftVal) => evaluate(op, leftVal, rightVal)
 
     case Get => stash()
+    case msg => log.warning(unexpectedMessageLog(msg.toString, "rightChildAcquired"))
   }
 
   def evaluated(value: Double): Receive = {
@@ -63,11 +65,15 @@ class NodeActor(tree: ExpressionTree) extends Actor with Stash {
     context.parent ! Value(evaluatedValue)
     context.become(evaluated(evaluatedValue))
   }
+
 }
 
 object NodeActor {
 
   def props(tree: ExpressionTree): Props = Props(new NodeActor(tree))
+
+  def unexpectedMessageLog(msg: String, state: String): String =
+    s"Received unexpected message $msg in state $state"
 
   case class Value(value: Double)
 
