@@ -5,7 +5,7 @@ import actors.NodeActor.{Get, Value}
 import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
-import cats.data.{Validated, ValidatedNel}
+import cats.data.ValidatedNel
 import cats.implicits._
 import preprocess.Preprocessor._
 import sequential.Expression.convertToPostfix

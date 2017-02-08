@@ -1,9 +1,8 @@
 package actors
 
-import actors.NodeActor.{Get, Value}
+import actors.NodeActor.{Get, Value, unexpectedMessageLog}
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Stash}
 import sequential.{ExpressionTree, Leaf, Node}
-import NodeActor.unexpectedMessageLog
 
 class NodeActor(tree: ExpressionTree) extends Actor with Stash with ActorLogging {
 

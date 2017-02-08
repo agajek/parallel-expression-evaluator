@@ -3,7 +3,7 @@ package preprocess
 import cats.data.NonEmptyList
 import cats.data.Validated.{Invalid, Valid}
 import org.scalatest.{FreeSpec, Matchers}
-import Preprocessor._
+import preprocess.Preprocessor._
 class PreprocessorTest extends FreeSpec with Matchers {
 
   "should tokenize expression" in {
