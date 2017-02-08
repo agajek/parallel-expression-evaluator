@@ -8,11 +8,11 @@ object Preprocessor {
     def f(list: List[Char], number: String = ""): List[String] = list match {
       case Nil if number.nonEmpty => number :: Nil
       case Nil => Nil
+      case x :: xs if x.isWhitespace => f(xs, number)
       case x :: xs if x.isDigit => f(xs, number.trim + x)
       case x :: xs if number.nonEmpty => number :: x.toString :: f(xs)
       case x :: xs => x.toString :: f(xs)
     }
-
     f(expression.toList)
   }
 

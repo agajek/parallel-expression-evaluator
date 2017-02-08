@@ -17,6 +17,17 @@ class PreprocessorTest extends FreeSpec with Matchers {
     tokenized.mkString shouldEqual expression
   }
 
+  "should tokenize expression and escape whitespaces" in {
+    //given
+    val expression = "2*(1-1)+3*  (1-3+4)+10/2"
+
+    //when
+    val tokenized = Preprocessor.tokenize(expression)
+
+    //then
+    tokenized.mkString shouldEqual expression.replaceAll("\\s+","")
+  }
+
   "should pass validation if paretheses are balanced" in {
     //when
     val a = "2*(1-1)+3*(1-3+4)+10/2"
